@@ -1,19 +1,14 @@
 # Introduction
 
-Amazon Bedrock, Amazon Web Services (AWS) managed cloud service for gen AI, empowers developers to build applications on top of powerful foundation models like Anthropic's Claude, Cohere Embed, and Amazon Titan. By integrating with Atlas Vector Search, Amazon Bedrock enables customers to leverage the vector database capabilities of Atlas to bring up-to-date context grounded in proprietary data. 
+This repository contains the CDK script and instruction on how to configure Amazon Bedrock Knowledge Base with PrivateLink to MongoDB Atlas. 
 
-With the click of a button, Amazon Bedrock now integrates MongoDB Atlas as a vector database into its fully managed, end-to-end Retrieval Augmented Generation (RAG) workflow, negating the need to build custom integrations to data sources or manage data flows. 
-
-
-# Retrieval Augmented Generation(RAG)
-
-One of the biggest challenges when working with gen AI is trying to avoid hallucinations, or erroneous results returned by the foundation model (FM) being used.  The FMs are trained on public information that gets outdated quickly and the models cannot take advantage of the proprietary information that enterprises possess.
-
-One way to tackle hallucinating FMs is to supplement a query with your own data using a workflow known as Retrieval Augmented Generation, or RAG. In a RAG workflow the FM will seek specific data, for instance a customer's previous purchase history, from a designated database that acts as a “source of truth” to augment the results returned by the FM. In order for a gen AI FM to search for, locate, and augment its responses, the relevant data needs to be turned into a vector and stored in a vector database.
 
 # Solution Architecture
 
-<img width="785" alt="image" src="https://github.com/mongodb-partners/mongodb_atlas_as_aws_bedrock_knowledge_base/assets/101570105/03966378-a96d-4797-97f5-744f7d8c3b73">
+Amazon Bedrock can connect to your Knowledge Base over the Internet and via a PrivateLink.  To connect over the PrivateLink, we need to create an Endpoint Service.  This Endpoint Service needs to be backed by a Network Load Balancer forwarding traffic to MongoDB Atlas PrivateLink. 
+
+![alt text](genAI-Bedrock-PL-blog.drawio.png)
+
 
 # Prerequisite
 
@@ -23,7 +18,31 @@ AWS CLI
 NPM
 
 # Implementation Steps
+The steps below describe the required configuration.
 
+* Configure the PrivateLink connection in MongoDB Atlas.  Note the VPC ID of the VPC where you create the PL.
+
+* In AWS Console, navigate to VPC | Endpoints.  Select your endpoint and select the Subnets tab.  Note the IP addresses and the AZs, we use them later in the configuration
+
+![alt text](image.png)
+
+* Next, look up the ports for your MongoDB Atlas cluster, by running the command below.
+
+```
+nslookup -type=SRV _mongodb._tcp.cluster2-pl-0.XXXX.mongodb.net
+```
+The command  produces output as follows:
+```
+Server:		10.XXX.XX.XX
+Address:	10.XXX.XX.XX#53
+
+Non-authoritative answer:
+_mongodb._tcp.cluster2-pl-0.XXXX.mongodb.net	service = 0 0 1030 pl-0-us-west-2.XXXX.mongodb.net.
+_mongodb._tcp.cluster2-pl-0.XXX.mongodb.net	service = 0 0 1031 pl-0-us-west-2.XXXX.mongodb.net.
+_mongodb._tcp.cluster2-pl-0.XXXX.mongodb.net	service = 0 0 1032 pl-0-us-west-2.XXXX.mongodb.net
+```
+
+* Next use the CDK script in this repo to create Service Endpoint fronting your PrivateLink Endpoint.  In order to run the script you need the information you collected in the previous steps: VPC ID, MongoDB Atlas cluster ports, AZs, and PL IPs.
 
 ## Step 1
 
@@ -52,8 +71,18 @@ Test the output
 
 `cdk destroy`
 
-# Conclusion:
-This blog demonstrates the process of establishing a Knowledge Base in Amazon bedrock, using MongoDB Atlas as the vector database. Once set up,  Amazon Bedrock will use your MongoDB Atlas Knowledge Base for data ingestion, and subsequently craft an Agent capable of responding to inquiries based on your accurate, proprietary data. 
+* When the script completes, in AWS Console | CloudFormation, navigate to Resources tab and click on the vpce link
+![alt text](image-1.png)
+
+* Select your service endpoint and note the service name on the details page.
+![alt text](image-2.png)
+
+* Proceed with the configuration of the [KB in Bedrock](http://link.to.blog).  It is the same as before with an additional step where you supply PrivateLink service name:
+![alt text](image-3.png)
+
+# Conclusion
+ When you complete, the configuration ensures your data stays private and does not travel over the Internet.
+
 
 
 
