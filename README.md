@@ -29,7 +29,7 @@ NPM
 
 Git clone the repository
 
-` git clone `
+` git clone https://github.com/mongodb-partners/mongodb_atlas_as_aws_bedrock_knowledge_base.git`
 
 ## Step 2
 
