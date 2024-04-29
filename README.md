@@ -46,7 +46,10 @@ _mongodb._tcp.cluster2-pl-0.XXXX.mongodb.net	service = 0 0 1032 pl-0-us-west-2.X
 * The ports in this case are 1030, 1031, and 1032.  They might be different in your case.
 
 * Next use the CDK script in this repo to create Service Endpoint fronting your PrivateLink Endpoint.  In order to run the script, you need the information you collected in the previous steps: VPC ID, MongoDB Atlas cluster ports, AZs, and PL IPs.
-* Modify [cdk.json](cdk.json) `context` section to replacing the placeholders with the information collected in the previous steps. 
+
+# Running the script
+## Step 1
+Modify [cdk.json](cdk.json) `context` section to replacing the placeholders with the information collected in the previous steps. 
 
 ```
   "availabilityZones": ["<az1>", "<az2>"],
@@ -54,16 +57,16 @@ _mongodb._tcp.cluster2-pl-0.XXXX.mongodb.net	service = 0 0 1032 pl-0-us-west-2.X
     "vpc_id": "<vpc_id>",
     "vpce_ips": ["<ip1>", "<ip2>"],
 ```
-
-# Running the script
-## Step 1
+## Step 2
 `cdk bootstrap`
 
-## Step 2
+## Step 3
 
 `cdk deploy`
 
 # Bedrock KB Configuration
+* Note: The customer’s VPC endpoint service must be in the same account as the knowledge base. For preventing a VPC endpoint service from being re-used across multiple knowledge bases within the same AWS account, customers can utilize the [bedrock:ThirdPartyKnowledgeBaseCredentialsSecretArn](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrock.html#amazonbedrock-bedrock_ThirdPartyKnowledgeBaseCredentialsSecretArn) condition key.
+  
 
 * When the script completes, in AWS Console | CloudFormation, navigate to Resources tab and click on the vpce link
 ![alt text](image-1.png)
