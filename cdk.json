@@ -23,10 +23,6 @@
       "aws",
       "aws-cn"
     ],
-    "availabilityZones": ["<az1>", "<az2>"],
-    "ports": [1031, 1032, 1030],
-    "vpc_id": "<vpc_id>",
-    "vpce_ips": ["<ip1>", "<ip2>"],
     "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
     "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
     "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": true,
