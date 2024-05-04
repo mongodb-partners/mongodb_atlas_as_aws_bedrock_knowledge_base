@@ -21,6 +21,9 @@ Amazon Bedrock can connect to your Knowledge Base over the Internet and via a Pr
 
 
 # Implementation Steps
+
+Ensure you read the [blog](https://www.mongodb.com/developer/products/atlas/rag-workflow-with-atlas-amazon-bedrock/) , before implementing the below steps.
+
 The steps below describe the required configuration.
 
 * Configure the [PrivateLink connection in MongoDB Atlas](https://aws.amazon.com/blogs/apn/connecting-applications-securely-to-a-mongodb-atlas-data-plane-with-aws-privatelink/).  Note the VPC ID of the VPC where you create the PL.
