@@ -27,7 +27,7 @@ The steps below describe the required configuration.
 
 ![alt text](image.png)
 
-* Next, look up the ports for your MongoDB Atlas cluster, by running the command below.
+* Next, look up the ports for your MongoDB Atlas cluster, by running the command below in an instance inside the VPC setup for the privatelink.
 
 ```
 nslookup -type=SRV _mongodb._tcp.XXXX-pl-0.XXXX.mongodb.net
@@ -58,6 +58,7 @@ Modify [cdk.json](cdk.json) `context` section to replacing the placeholders with
     "vpce_ips": ["<ip1>", "<ip2>"],
 ```
 ## Step 2
+Update the mongodb_atlas_as_aws_bedrock_knowledge_base.ts file for the environment variable for account and region. (ref line number 18)
 `cdk bootstrap`
 
 ## Step 3
