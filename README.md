@@ -30,7 +30,7 @@ The steps below describe the required configuration.
 * Next, look up the ports for your MongoDB Atlas cluster, by running the command below.
 
 ```
-nslookup -type=SRV _mongodb._tcp.cluster2-pl-0.XXXX.mongodb.net
+nslookup -type=SRV _mongodb._tcp.XXXX-pl-0.XXXX.mongodb.net
 ```
 The command  produces output as follows:
 ```
@@ -38,9 +38,9 @@ Server:		10.XXX.XX.XX
 Address:	10.XXX.XX.XX#53
 
 Non-authoritative answer:
-_mongodb._tcp.cluster2-pl-0.XXXX.mongodb.net	service = 0 0 1030 pl-0-us-west-2.XXXX.mongodb.net.
-_mongodb._tcp.cluster2-pl-0.XXX.mongodb.net	service = 0 0 1031 pl-0-us-west-2.XXXX.mongodb.net.
-_mongodb._tcp.cluster2-pl-0.XXXX.mongodb.net	service = 0 0 1032 pl-0-us-west-2.XXXX.mongodb.net
+_mongodb._tcp.XXXX-pl-0.XXXX.mongodb.net	service = 0 0 1030 pl-0-us-west-2.XXXX.mongodb.net.
+_mongodb._tcp.XXXX-pl-0.XXX.mongodb.net	service = 0 0 1031 pl-0-us-west-2.XXXX.mongodb.net.
+_mongodb._tcp.XXXX-pl-0.XXXX.mongodb.net	service = 0 0 1032 pl-0-us-west-2.XXXX.mongodb.net
 ```
 
 * The ports in this case are 1030, 1031, and 1032.  They might be different in your case.
