@@ -1,3 +1,4 @@
+// Import necessary modules
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -5,20 +6,52 @@ import {NetworkLoadBalancer} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import {IpTarget} from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
+// Import dotenv to load environment variables
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+// Define the stack
 export class MongodbAtlasAsAwsBedrockKnowledgeBaseStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // define network load balancer
-    const vpc = ec2.Vpc.fromLookup(this, this.node.tryGetContext("vpc_id"), { isDefault: true });
+   // Define the VPC
 
+    // Validate the .env values
+    const vpcId = process.env.VPC_ID;
+    if (!vpcId) { throw new Error('VPC_ID is not defined in the environment variables');}
+
+    const vpc = ec2.Vpc.fromLookup(this, vpcId, { isDefault: false });
+
+    // Log specific VPC properties
+    console.log(`VPC ID: ${vpc.vpcId}`);
+    console.log(`VPC CIDR: ${vpc.vpcCidrBlock}`);
+
+    
     // create subnet selection
-    const vpcSubnets = vpc.selectSubnets({
-      // subnets: [subnet1, subnet2],
-      availabilityZones: this.node.tryGetContext("availabilityZones")
-    });
+    
+    // Validate the .env values     
+    const availabilityZones = process.env.AVAILABILITY_ZONES;
+    if (!availabilityZones) {
+      throw new Error('AVAILABILITY_ZONES is not defined in the environment variables');
+    }
+          
+    const vpcSubnets = vpc.selectSubnets({ availabilityZones: availabilityZones.split(',') });
 
-    const ports = this.node.tryGetContext("ports") as number[];
+    // Log the subnet details
+    console.log(vpcSubnets.subnetIds);
+
+
+    // Validate the .env values 
+    const portsEnv = process.env.PORTS;
+    if (!portsEnv) { throw new Error('PORTS is not defined in the environment variables'); }
+
+    const ports = portsEnv.split(',').map(Number);
+    
+    // Log the Port details
+    console.log(`Ports: ${ports}`);
+  
+ 
 
     const nlbSg = new ec2.SecurityGroup(this, 'nlb-sg', { vpc });
     ports.forEach(port => {
@@ -26,14 +59,27 @@ export class MongodbAtlasAsAwsBedrockKnowledgeBaseStack extends cdk.Stack {
       nlbSg.addIngressRule(ec2.Peer.ipv4("0.0.0.0/0"), ec2.Port.tcp(port), 'allow from everywhere');
     })
     
-    const lb = new NetworkLoadBalancer(this, 'load-balancer-for-service-endpoint', { vpc, securityGroups:[nlbSg], vpcSubnets });
+    console.log(`Security Group ID: ${nlbSg.securityGroupId}`);
 
-    const vpce_ips = this.node.tryGetContext("vpce_ips") as string[];
+    const lb = new NetworkLoadBalancer(this, 'load-balancer-for-service-endpoint', { vpc, securityGroups:[nlbSg], vpcSubnets });
+    console.log(`Load Balancer ARN: ${lb.loadBalancerArn}`);
+
+    // Validate the .env values
+    const vpceIpsEnv = process.env.VPCE_IPS;
+    if (!vpceIpsEnv) { throw new Error('VPCE_IPS is not defined in the environment variables'); }
+
+    const vpce_ips = vpceIpsEnv.split(',');
+    
+     // Log the VPC Endpoint IP details
+    console.log(`VPC Endpoint IPs: ${vpce_ips}`);
+
 
     ports.forEach(port => {
         const listener = lb.addListener(`listener-${port}`, { port: port });
+        console.log(`Listener ARN for port ${port}: ${listener.listenerArn}`);
 
         const ips_with_ports = vpce_ips.map(vpce_ip => new IpTarget(vpce_ip, port));
+        console.log(`IP Targets for port ${port}: ${JSON.stringify(ips_with_ports)}`);
 
         listener.addTargets(`target-${port}`, {
           port: port,

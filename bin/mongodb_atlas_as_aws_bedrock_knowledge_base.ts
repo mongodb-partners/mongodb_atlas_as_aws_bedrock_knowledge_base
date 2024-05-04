@@ -2,6 +2,11 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { MongodbAtlasAsAwsBedrockKnowledgeBaseStack } from '../lib/mongodb_atlas_as_aws_bedrock_knowledge_base-stack';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config({ path: '../.env' });
+
 
 const app = new cdk.App();
 new MongodbAtlasAsAwsBedrockKnowledgeBaseStack(app, 'MongodbAtlasAsAwsBedrockKnowledgeBaseStack', {
@@ -15,7 +20,7 @@ new MongodbAtlasAsAwsBedrockKnowledgeBaseStack(app, 'MongodbAtlasAsAwsBedrockKno
 
   /* Uncomment the next line if you know exactly what Account and Region you
    * want to deploy the stack to. */
-  env: { account: '<account>', region: '<region>' },
+  env: { account: process.env.AWS_ACCOUNT_ID, region: process.env.AWS_REGION},
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
