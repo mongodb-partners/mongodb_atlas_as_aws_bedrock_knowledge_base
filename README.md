@@ -59,6 +59,7 @@ Modify [cdk.json](cdk.json) `context` section to replacing the placeholders with
 ```
 ## Step 2
 Update the mongodb_atlas_as_aws_bedrock_knowledge_base.ts file for the environment variable for account and region. (ref line number 18)
+
 `cdk bootstrap`
 
 ## Step 3
