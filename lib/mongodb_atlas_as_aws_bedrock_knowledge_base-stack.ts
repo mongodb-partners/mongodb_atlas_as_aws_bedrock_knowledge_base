@@ -21,7 +21,7 @@ export class MongodbAtlasAsAwsBedrockKnowledgeBaseStack extends cdk.Stack {
     const vpcId = process.env.VPC_ID;
     if (!vpcId) { throw new Error('VPC_ID is not defined in the environment variables');}
 
-    const vpc = ec2.Vpc.fromLookup(this, vpcId, { isDefault: false });
+    const vpc = ec2.Vpc.fromLookup(this, 'Vpc', { isDefault: false, vpcId: vpcId });
 
     // Log specific VPC properties
     console.log(`VPC ID: ${vpc.vpcId}`);
