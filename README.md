@@ -54,7 +54,9 @@ _mongodb._tcp.cluster2-pl-0.XXXX.mongodb.net	service = 0 0 1032 pl-0-us-west-2.X
 
 # Running the script
 ## Step 1
-Update the .env file 
+
+- Copy .env-example to .env
+- Update the .env file with appropriate values
 
 ```
 AWS_ACCOUNT_ID = "XXXXXX" # the AWS account ID
