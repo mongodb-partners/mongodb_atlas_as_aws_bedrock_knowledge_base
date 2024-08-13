@@ -78,10 +78,12 @@ VPCE_IPS = "10.x.x.x,10.x.x.x" # the IPs of the VPC endpoints
 
 # Bedrock KB Configuration
 * Note: The customer’s VPC endpoint service must be in the same account as the knowledge base. For preventing a VPC endpoint service from being re-used across multiple knowledge bases within the same AWS account, customers can utilize the [bedrock:ThirdPartyKnowledgeBaseCredentialsSecretArn](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrock.html#amazonbedrock-bedrock_ThirdPartyKnowledgeBaseCredentialsSecretArn) condition key.
-  
+
+
+  https://github.com/mongodb-partners/mongodb_atlas_as_aws_bedrock_knowledge_base/blob/main/images/Cloudformation_resouces.png
 
 * When the script completes, in AWS Console | CloudFormation, navigate to Resources tab and click on the vpce link
-![CloudFormation console showing the Resources tab with the vpce link highlighted](Cloudformation_resouces.png)
+![CloudFormation console showing the Resources tab with the vpce link highlighted](images/Cloudformation_resouces.png)
 
 * Select your service endpoint and note the service name on the details page.
 ![Details page of the selected service endpoint showing the service name](images/service-endpoints.png)
