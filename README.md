@@ -55,7 +55,18 @@ _mongodb._tcp.cluster2-pl-0.XXXX.mongodb.net	service = 0 0 1032 pl-0-us-west-2.X
 # Running the script
 ## Step 1
 
+- Clone the repository 
+
+`git clone https://github.com/mongodb-partners/mongodb_atlas_as_aws_bedrock_knowledge_base.git`
+  
 - Copy .env-example to .env
+
+  ` cd mongodb_atlas_as_aws_bedrock_knowledge_base `
+  
+  ` cp .env-example .env `
+
+  ` npm install aws-cdk-lib dotenv `
+  
 - Update the .env file with appropriate values
 
 ```
