@@ -46,6 +46,7 @@ export class MongodbAtlasAsAwsBedrockKnowledgeBaseStack extends cdk.Stack {
     const portsEnv = process.env.PORTS;
     if (!portsEnv) { throw new Error('PORTS is not defined in the environment variables'); }
 
+    console.log(`Ports: ${portsEnv}`)
     const ports = portsEnv.split(',').map(Number);
     
     // Log the Port details
@@ -99,5 +100,24 @@ export class MongodbAtlasAsAwsBedrockKnowledgeBaseStack extends cdk.Stack {
       contributorInsights: true
     });
 
+    const plVpce_sg = process.env.VPCE_SG;
+    if (!plVpce_sg) { throw new Error('VPCE_SG is not defined in the environment variables'); }
+
+      // Import the existing security group
+    const existingSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+      this,
+      'ImportedVPCESecurityGroup',
+      plVpce_sg // The security group ID of your VPC endpoint
+    );
+
+    // Now you can add rules to the imported security group
+    existingSecurityGroup.addIngressRule(
+      ec2.Peer.securityGroupId(nlbSg.securityGroupId),
+      ec2.Port.allTcp(),
+      'allow from service'
+    );
+
+    }
+    
+
  }
-}
