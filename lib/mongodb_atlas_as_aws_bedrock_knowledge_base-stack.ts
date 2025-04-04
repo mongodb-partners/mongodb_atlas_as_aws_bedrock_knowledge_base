@@ -36,11 +36,10 @@ export class MongodbAtlasAsAwsBedrockKnowledgeBaseStack extends cdk.Stack {
       throw new Error('AVAILABILITY_ZONES is not defined in the environment variables');
     }
           
-    const vpcSubnets = vpc.selectSubnets({ availabilityZones: availabilityZones.split(',') });
+    const vpcSubnets = vpc.selectSubnets({ availabilityZones: availabilityZones.split(','), onePerAz: true });
 
     // Log the subnet details
     console.log(vpcSubnets.subnetIds);
-
 
     // Validate the .env values 
     const portsEnv = process.env.PORTS;
