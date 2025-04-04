@@ -31,15 +31,22 @@ export class MongodbAtlasAsAwsBedrockKnowledgeBaseStack extends cdk.Stack {
     // create subnet selection
     
     // Validate the .env values     
-    const availabilityZones = process.env.AVAILABILITY_ZONES;
-    if (!availabilityZones) {
-      throw new Error('AVAILABILITY_ZONES is not defined in the environment variables');
+    const subnetIds = process.env.SUBNET_IDS;
+    if (!subnetIds) {
+      throw new Error('SUBNET_IDS is not defined in the environment variables');
     }
           
-    const vpcSubnets = vpc.selectSubnets({ availabilityZones: availabilityZones.split(',') });
+    // const vpcSubnets = { subnetIds: subnetIds.split(',') };
+    const subnetArray = subnetIds.split(',');
+
+    const vpcSubnets = {
+      subnets: subnetArray.map((subnetId, index) => 
+        ec2.Subnet.fromSubnetId(this, `Subnet${index + 1}`, subnetId.trim())
+      )
+    };
 
     // Log the subnet details
-    console.log(vpcSubnets.subnetIds);
+    console.log(`Selected subnet IDs: ${subnetArray}`);
 
 
     // Validate the .env values 
@@ -62,7 +69,11 @@ export class MongodbAtlasAsAwsBedrockKnowledgeBaseStack extends cdk.Stack {
     
     console.log(`Security Group ID: ${nlbSg.securityGroupId}`);
 
-    const lb = new NetworkLoadBalancer(this, 'load-balancer-for-service-endpoint', { vpc, securityGroups:[nlbSg], vpcSubnets });
+    const lb = new NetworkLoadBalancer(this, 'load-balancer-for-service-endpoint', { 
+      vpc, 
+      securityGroups: [nlbSg], 
+      vpcSubnets: vpcSubnets 
+    });
     console.log(`Load Balancer ARN: ${lb.loadBalancerArn}`);
 
     // Validate the .env values
