@@ -75,7 +75,7 @@ AWS_REGION = "us-east-1" # the AWS region
 
 # VPC / VPCE configuration
 VPC_ID="vpc-XXXXXX" # the VPC ID where the VPC endpoints will be created
-AVAILABILITY_ZONES = "us-east-1a,us-east-1b" # the availability zones where the VPC endpoints will be created
+SUBNET_IDS = subnet-xxxxxx,subnet-xxxxxx # the subnet IDs where the VPC endpoints will be created
 PORTS = "1024, 1025, 1026" # the ports that will be opened in the security group
 VPCE_IPS = "10.x.x.x,10.x.x.x" # the IPs of the VPC endpoints
 VPCE_SG = "sg-xxxxxx" # the security group of the MongoDB Atlas Private Link endpoint
