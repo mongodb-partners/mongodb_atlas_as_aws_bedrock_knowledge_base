@@ -79,14 +79,73 @@ SUBNET_IDS = subnet-xxxxxx,subnet-xxxxxx # the subnet IDs where the VPC endpoint
 PORTS = "1024, 1025, 1026" # the ports that will be opened in the security group
 VPCE_IPS = "10.x.x.x,10.x.x.x" # the IPs of the VPC endpoints
 VPCE_SG = "sg-xxxxxx" # the security group of the MongoDB Atlas Private Link endpoint
-```
-## Step 2
 
-`cdk bootstrap`
+# Optional: Custom deployment role ARN to avoid using AdministratorAccess
+# DEPLOYMENT_ROLE_ARN = "arn:aws:iam::ACCOUNT_ID:role/MongoDBAtlasBedrockKBDeployRole"
+```
+
+## Step 2 (Optional but Recommended): Create a Custom Deployment Role
+
+To avoid using `AdministratorAccess` permissions, you can create a custom IAM role with the minimum required permissions:
+
+1. Create the policy document (a sample file `mongodb-atlas-bedrock-kb-policy.json` is provided in this repository)
+
+```bash
+aws iam create-policy \
+  --policy-name MongoDBAtlasBedrockKBDeployPolicy \
+  --policy-document file://mongodb-atlas-bedrock-kb-policy.json
+```
+
+2. Create the role that will be used for deployment
+
+```bash
+aws iam create-role \
+  --role-name MongoDBAtlasBedrockKBDeployRole \
+  --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"cloudformation.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+```
+
+3. Attach the policy to the role
+
+```bash
+aws iam attach-role-policy \
+  --role-name MongoDBAtlasBedrockKBDeployRole \
+  --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/MongoDBAtlasBedrockKBDeployPolicy
+```
+
+4. Create a policy to allow the CDK bootstrap role to pass your custom role:
+    1. Below command will create an IAM policy using the permissions defined in the pass-role-policy.json file
+        ```
+        aws iam create-policy \
+          --policy-name CDKPassRolePolicy \
+          --policy-document file://pass-role-policy.json
+        ```
+    2. Below command will attach the policy to the Cloudformation deploy role
+        ```
+        aws iam attach-role-policy \
+          --role-name cdk-hnb659fds-deploy-role-YOUR_ACCOUNT_ID-REGION \
+          --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/CDKPassRolePolicy
+        ```
+        Note: Replace YOUR_ACCOUNT_ID with your AWS account ID and REGION with your AWS region (e.g., us-east-1).
+
+5. Update your `.env` file with the role ARN
+
+```
+DEPLOYMENT_ROLE_ARN = "arn:aws:iam::YOUR_ACCOUNT_ID:role/MongoDBAtlasBedrockKBDeployRole"
+```
 
 ## Step 3
 
-`cdk deploy`
+```
+cdk bootstrap --cloudformation-execution-policies "arn:aws:iam::YOUR_ACCOUNT_ID:policy/MongoDBAtlasBedrockKBDeployPolicy"
+```
+Replace `YOUR_ACCOUNT_ID` with your AWS Account ID
+
+## Step 4
+
+```
+cdk deploy --role-arn "arn:aws:iam::YOUR_ACCOUNT_ID:role/MongoDBAtlasBedrockKBDeployRole"
+```
+Replace `YOUR_ACCOUNT_ID` with your AWS Account ID
 
 # Bedrock KB Configuration
 * Note: The customer’s VPC endpoint service must be in the same account as the knowledge base. For preventing a VPC endpoint service from being re-used across multiple knowledge bases within the same AWS account, customers can utilize the [bedrock:ThirdPartyKnowledgeBaseCredentialsSecretArn](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrock.html#amazonbedrock-bedrock_ThirdPartyKnowledgeBaseCredentialsSecretArn) condition key.
