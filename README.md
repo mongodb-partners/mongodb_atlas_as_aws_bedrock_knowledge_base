@@ -113,19 +113,11 @@ aws iam attach-role-policy \
 ```
 
 4. Create a policy to allow the CDK bootstrap role to pass your custom role:
-    1. Below command will create an IAM policy using the permissions defined in the pass-role-policy.json file
-        ```
-        aws iam create-policy \
-          --policy-name CDKPassRolePolicy \
-          --policy-document file://pass-role-policy.json
-        ```
-    2. Below command will attach the policy to the Cloudformation deploy role
-        ```
-        aws iam attach-role-policy \
-          --role-name cdk-hnb659fds-deploy-role-YOUR_ACCOUNT_ID-REGION \
-          --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/CDKPassRolePolicy
-        ```
-        Note: Replace YOUR_ACCOUNT_ID with your AWS account ID and REGION with your AWS region (e.g., us-east-1).
+```
+aws iam create-policy \
+  --policy-name CDKPassRolePolicy \
+  --policy-document file://pass-role-policy.json
+```
 
 5. Update your `.env` file with the role ARN
 
@@ -141,6 +133,14 @@ cdk bootstrap --cloudformation-execution-policies "arn:aws:iam::YOUR_ACCOUNT_ID:
 Replace `YOUR_ACCOUNT_ID` with your AWS Account ID
 
 ## Step 4
+
+Before running `cdk deploy` command, execute the following command that will attach the policy to the Cloudformation deploy role created during the bootstrap operation.
+```
+aws iam attach-role-policy \
+  --role-name cdk-hnb659fds-deploy-role-YOUR_ACCOUNT_ID-REGION \
+  --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/CDKPassRolePolicy
+```
+Note: Replace YOUR_ACCOUNT_ID with your AWS account ID and REGION with your AWS region (e.g., us-east-1).
 
 ```
 cdk deploy --role-arn "arn:aws:iam::YOUR_ACCOUNT_ID:role/MongoDBAtlasBedrockKBDeployRole"
